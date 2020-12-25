@@ -1,0 +1,38 @@
+{
+  "mainID": 0,
+  "mainNick": "",
+  "avatar": "",
+
+  "id": 0,
+  "nick": "",
+  "name": "",
+  "messages": "",
+
+  "warnings": [
+    {
+      "id": 0,
+      "priority": "",
+      "info": "",
+      "end": ""
+    }],
+
+  "ban": {
+    "status": "",
+    "info": "",
+    "end": ""
+  },
+
+  "awards": [
+    {
+      "id": 0,
+      "img": "",
+      "title": ""
+    }
+  ],
+
+  "rang": "",
+  "role": {
+    "id": 0,
+    "fix": false
+  }
+}
