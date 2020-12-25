@@ -6,7 +6,7 @@ let prefix = config.prefix;
 bot.on("message", msg=>{
 	if (msg.content === prefix + '') {
 		msg.channel.send(msg.guild.id);
-		console.log(msg.guild.members)
+		console.log(msg.guild)
 	}
 })
 
