@@ -3,10 +3,12 @@ const bot = new Discord.Client();
 let config = require('./botconfig.json');
 let prefix = config.prefix;
 
+let createFileUserInfo = require('./module/users/createFileUserInfo');
+
 bot.on("message", msg=>{
 	if (msg.content === prefix + '') {
 		msg.channel.send(msg.guild.id);
-		console.log(msg.guild)
+		createFileUserInfo()
 	}
 })
 
