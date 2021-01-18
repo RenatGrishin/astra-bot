@@ -1,23 +1,21 @@
 {
-  "mainID": 0,
-  "mainNick": "",
-  "avatar": "",
+    "mainID": 0,
+    "mainNick": "",
+    "avatar": "",
 
-  "id": 0,
-  "nick": "",
-  "name": "",
-  "messages": "",
-
-  "ban": {
-    "status": "",
-    "info": "",
-    "end": ""
-  },
-
-  "rang": "",
-  "role": {
-    "id": 0,
+    "discriminator": 0,
+    "nick": "",
     "name": "",
-    "fix": false
+
+    "ban": {
+        "count": 0,
+        "status": false,
+        "info": "",
+        "end": ""
+    },
+
+	"awards": [],
+
+    "rang": "",
+	"fix": false
   }
-}
