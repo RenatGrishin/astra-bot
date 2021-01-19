@@ -11,24 +11,16 @@ bot.on("message", msg=>{
 		let command = msg.content.split(' ', 1)[0].toLowerCase();
 
 		if (command === prefix + 'mes') {
-			msg.channel.send(msg.guild.id);
-			messageCounter(msg.author)
+			//msg.channel.send(msg.guild.id);
+			messageCounter(msg.author, msg)
 		}
 
 		/*  Изменить себе ник  */
 		if (command === prefix + 'name') {
 			let say = msg.content.split(' ', 4);
-			let userName = say[2]
-			if(say[3]){ userName += ' '+ say[3]}
+			say.shift();
 
-			let myNick = editNickname(msg.author, say[1], userName);
-			if(myNick.error){
-				msg.channel.send(myNick.message);
-			}else{
-				msg.member.setNickname(myNick.newNick);
-				msg.channel.send(myNick.message)
-				//msg.guild.member(792364133386813440).setNickname("myNick.newNick");
-			}
+			editNickname(msg.author, say, msg);
 		}
 		if (command === prefix + 'w') {
 			console.log("смена имени");

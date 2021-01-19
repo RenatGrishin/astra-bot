@@ -3,7 +3,7 @@ let checkFileUserInfo = require('./checkFileUserInfo');
 let folder = './module/users/usersInfo/';
 
 
-async function messageCounter (user) {
+async function messageCounter (user, msg = null) {
 	let path = await checkFileUserInfo(user);
 	let messages = require(`./usersInfo/${path.messages}`);
 
