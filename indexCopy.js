@@ -8,14 +8,17 @@ let editNickname = require('./module/users/editNickname');
 let conditionForMessage = require('./module/users/conditionForMessage');
 let calculateRank = require('./module/users/calculateRank');
 
-bot.on("message", async msg=>{
+async function readMessage (msg){
 
+}
+
+bot.on("message", msg=>{
 	if (!msg.author.bot){
 		let command = msg.content.split(' ', 1)[0].toLowerCase();
 
 		/* Записываем сообщение в счетчик */
-		if( await conditionForMessage(msg.content, ['!']) ){
-			await messageCounter(msg.author, msg);
+		if( conditionForMessage(msg.content, ['!']) ){
+			messageCounter(msg.author, msg);
 		}
 
 		/*  Изменить себе ник  */
@@ -23,12 +26,12 @@ bot.on("message", async msg=>{
 			let say = msg.content.split(' ', 4);
 			say.shift();
 
-			await editNickname(msg.author, say, msg);
+			editNickname(msg.author, say, msg);
 		}
 
 		/*  Получить карточку о себе  */
 		if (command === prefix + 'me') {
-			await calculateRank(msg.author);
+			console.log(calculateRank(msg.author));
 		}
 		if (command === prefix + 'w') {
 			console.log("смена имени");

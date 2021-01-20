@@ -1,7 +1,7 @@
 let fs = require('fs');
 const info = require('./usersInfo/template/template');
 const messages = require('./usersInfo/template/template_messages');
-const warnings = require('./usersInfo/template/template_warnings');
+const warnings = []; //require('./usersInfo/template/template_warnings');
 let folder = './module/users/usersInfo/';
 
 async function checkFileUserInfo(user){
@@ -36,10 +36,7 @@ async function checkFileUserInfo(user){
 
 	/* Если нет файла с предупреждениями, то заполняем и создаем новый файл */
 	if(!fs.existsSync(userWarningsJSON)){
-		newWarning = warnings;
-		newWarning.warnings = [];
-
-		let objTemplate = JSON.stringify(newWarning, null, 2);
+		let objTemplate = JSON.stringify(warnings, null, 2);
 		fs.writeFile(userWarningsJSON, objTemplate, (err) => { if(err) throw err; });
 	}
 

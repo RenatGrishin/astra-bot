@@ -29,14 +29,13 @@ async function editNickname (user, arrMess, msg){
 		}
 	}else{
 		let path = await checkFileUserInfo(user);
-		let userInfo = require(`./usersInfo/${path.messages}`);
+		let userInfo = require(`./usersInfo/${path.info}`);
 
 		userInfo.nick = arrMess[0];
 		userInfo.name = arrMess[1];
 		if(arrMess[2]) userInfo.name = userInfo.name +' '+ arrMess[2];
 
 		let objTemplate = JSON.stringify(userInfo, null, 2);
-		console.log(objTemplate)
 		fs.writeFile(folder+path.info, objTemplate, (err) => { if(err) throw err; });
 
 		info.error = false;
