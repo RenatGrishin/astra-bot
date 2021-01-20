@@ -7,6 +7,7 @@ let messageCounter = require('./module/users/messageCounter');
 let editNickname = require('./module/users/editNickname');
 let conditionForMessage = require('./module/users/conditionForMessage');
 let calculateRank = require('./module/users/calculateRank');
+let rankEdit = require('./module/users/rankEdit');
 
 bot.on("message", async msg=>{
 
@@ -28,7 +29,8 @@ bot.on("message", async msg=>{
 
 		/*  Получить карточку о себе  */
 		if (command === prefix + 'me') {
-			await calculateRank(msg.author);
+			let calcRank = await calculateRank(msg.author);
+			await rankEdit(msg.author, calcRank);
 		}
 		if (command === prefix + 'w') {
 			console.log("смена имени");

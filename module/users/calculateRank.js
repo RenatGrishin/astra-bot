@@ -2,7 +2,7 @@ let fs = require('fs');
 let checkFileUserInfo = require('./checkFileUserInfo');
 
 function rank(rank, points){
-	points = 147;
+	//points = 147;
 	let rankInfo ={
 		rank: 0,                  // Присвоенный ранг
 		rankPoints: 0,            // Необходимые очки присвоенного ранга
@@ -12,12 +12,10 @@ function rank(rank, points){
 	};
 
 	if(points < 0){
-		rankInfo.rank = 0;
-		rankInfo.rankPoints = 0;
-		rankInfo.nextRankPoints = rank[1].points;
-		rankInfo.betweenRankPoints = rank[1].points;
-		rankInfo.leftoversPoints = 0;
-		return rankInfo;
+		return {
+			rank: rankInfo.rank,
+			progress: 0
+		}
 	}
 
 	for(let i=0 ; i < rank.length ; i++){
@@ -82,7 +80,6 @@ async function calculateRank(user, warningPoint=5, banPoint=300) {
 		rank: rankPoints.rank,
 		progress: rankPoints.progress
 	}
-
 	return userRank;
 }
 
