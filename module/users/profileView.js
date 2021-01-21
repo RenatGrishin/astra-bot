@@ -39,6 +39,7 @@ async function profileView(user, userCart, rankInfo) {
 		progress: rankInfo.progress,
 		warnings: 0,
 		bans: userCart.ban.count,
+		banStatus: userCart.ban.status,
 		awards: []
 	}
 
@@ -51,6 +52,8 @@ async function profileView(user, userCart, rankInfo) {
 	}
 
 	console.log(profile);
+
+	return profile;
 }
 
 module.exports = profileView;

@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 let config = require('./botconfig.json');
 let prefix = config.prefix;
+const mainChannel = '330779118427832320'; // ID Общий зал
 
 let messageCounter = require('./module/users/messageCounter');
 let editNickname = require('./module/users/editNickname');
@@ -9,6 +10,7 @@ let conditionForMessage = require('./module/users/conditionForMessage');
 let calculateRank = require('./module/users/calculateRank');
 let rankEdit = require('./module/users/rankEdit');
 let profileView = require('./module/users/profileView');
+let hiAndBye = require('./module/hiAndBye/hiAndBye');
 
 bot.on("message", async msg=>{
 
@@ -35,12 +37,11 @@ bot.on("message", async msg=>{
 			await profileView(msg.author, userCart, calcRank);
 		}
 
-		if (command === prefix + 'say'){
-			if(msg.channel.id == 706564776138113084){
+		if (command === prefix + 'say' || msg.channel.id == 706564776138113084){
 
-				console.log(msg.content)
-				msg.channel.send(msg.content);
-			}
+			console.log(msg.content)
+			//bot.channels.cache.get(mainChannel).send(msg.content.substr(6))
+			bot.channels.cache.get('330779118427832320').send(msg.content.slice(4));
 		}
 
 		if (command === prefix + 'w') {
@@ -56,6 +57,14 @@ bot.on("message", async msg=>{
 		}
 	}
 })
+
+
+bot.on("guildMemberAdd", async member => {
+	bot.channels.cache.get(mainChannel).send(await hiAndBye("hi", member.id));
+});
+bot.on("guildMemberRemove", async member => {
+	bot.channels.cache.get(mainChannel).send(await hiAndBye("bye", member.id));
+});
 
 bot.login(config.token);
 
