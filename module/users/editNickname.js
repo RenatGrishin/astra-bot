@@ -36,7 +36,7 @@ async function editNickname (user, arrMess, msg){
 		if(arrMess[2]) userInfo.name = userInfo.name +' '+ arrMess[2];
 
 		let objTemplate = JSON.stringify(userInfo, null, 2);
-		fs.writeFile(folder+path.info, objTemplate, (err) => { if(err) throw err; });
+		fs.writeFileSync(folder+path.info, objTemplate, (err) => { if(err) throw err; });
 
 		info.error = false;
 		info.message = `Теперь я буду звать тебя – <@${user.id}>`;

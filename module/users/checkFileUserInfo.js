@@ -22,7 +22,7 @@ async function checkFileUserInfo(user){
 		newInfo.avatar = user.avatar;
 
 		let objTemplate = JSON.stringify(newInfo, null, 2);
-		fs.writeFile(userInfoJSON, objTemplate, (err) => { if(err) throw err; });
+		await fs.writeFileSync(userInfoJSON, objTemplate, (err) => { if(err) throw err; });
 	}
 
 	/* Если нет файла с сообщениями, то заполняем и создаем новый файл */
@@ -31,13 +31,15 @@ async function checkFileUserInfo(user){
 		newMessage.messages = 0;
 
 		let objTemplate = JSON.stringify(newMessage, null, 2);
-		fs.writeFile(userMessagesJSON, objTemplate, (err) => { if(err) throw err; });
+		await fs.writeFileSync(userMessagesJSON, objTemplate, (err) => { if(err) throw err; });
+
+		console.log(objTemplate);
 	}
 
 	/* Если нет файла с предупреждениями, то заполняем и создаем новый файл */
 	if(!fs.existsSync(userWarningsJSON)){
 		let objTemplate = JSON.stringify(warnings, null, 2);
-		fs.writeFile(userWarningsJSON, objTemplate, (err) => { if(err) throw err; });
+		await fs.writeFileSync(userWarningsJSON, objTemplate, (err) => { if(err) throw err; });
 	}
 
 	return {

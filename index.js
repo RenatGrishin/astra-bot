@@ -32,6 +32,15 @@ bot.on("message", async msg=>{
 			let calcRank = await calculateRank(msg.author);
 			await rankEdit(msg.author, calcRank);
 		}
+
+		if (command === prefix + 'say'){
+			if(msg.channel.id == 706564776138113084){
+
+				console.log(msg.content)
+				msg.channel.send(msg.content);
+			}
+		}
+
 		if (command === prefix + 'w') {
 			console.log("смена имени");
 			console.log(msg.member)

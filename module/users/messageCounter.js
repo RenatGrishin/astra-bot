@@ -10,7 +10,7 @@ async function messageCounter (user, msg = null) {
 	messages.messages++;
 
 	let objTemplate = JSON.stringify(messages, null, 2);
-	fs.writeFile(folder+path.messages, objTemplate, (err) => { if(err) throw err; });
+	fs.writeFileSync(folder+path.messages, objTemplate, (err) => { if(err) throw err; });
 }
 
 

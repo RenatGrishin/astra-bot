@@ -9,7 +9,7 @@ async function rankEdit(user, rankPoint) {
 	userInfo.rank = rankPoint.rank;
 
 	let objTemplate = JSON.stringify(userInfo, null, 2);
-	fs.writeFile(folder+path.info, objTemplate, (err) => { if(err) throw err; });
+	fs.writeFileSync(folder+path.info, objTemplate, (err) => { if(err) throw err; });
 }
 
 module.exports = rankEdit;
