@@ -10,6 +10,8 @@ async function rankEdit(user, rankPoint) {
 
 	let objTemplate = JSON.stringify(userInfo, null, 2);
 	fs.writeFileSync(folder+path.info, objTemplate, (err) => { if(err) throw err; });
+
+	return userInfo;
 }
 
 module.exports = rankEdit;
