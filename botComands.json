@@ -1,0 +1,16 @@
+{
+  "editNick": ["name", "имя"],
+  "profileCart": ["me", "я"],
+  "getWarning": ["warnings", "наказы"],
+  "getBan": ["bans", "баны"],
+  "getAwards": ["awards", "награды"],
+  "getAllAwards": ["allawards","всенаграды"],
+
+  "adminSay": ["say", "скажи"],
+  "adminAddWarning": ["warning", "наказ"],
+  "adminDeleteWarning": ["dwarning", "унаказ"],
+  "adminAddBan": ["ban", "бан"],
+  "adminDeleteBan": ["dban","убан"],
+  "adminAddAward": ["award", "награда"],
+  "adminDeleteAward": ["daward", "унаграда"]
+}

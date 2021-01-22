@@ -1,5 +1,4 @@
 let checkFileUserInfo = require('./checkFileUserInfo');
-let folder = './module/users/usersInfo/'
 
 async function getWarning(warnings){
 	let warningPoints = 0;
@@ -26,8 +25,9 @@ async function getAwards(awards, awardList){
 async function profileView(user, userCart, rankInfo) {
 	let path = await checkFileUserInfo(user);
 	let userMessage = require(`./usersInfo/${path.messages}`);
-	let userWarning = require(`./usersInfo/${path.warnings}`);
 	let awardsJSON = require('./awards/awards');
+
+	console.log(userCart);
 
 	let profile = {
 		avatar: userCart.avatar,
@@ -37,14 +37,10 @@ async function profileView(user, userCart, rankInfo) {
 		rank: userCart.rank,
 		points: rankInfo.points,
 		progress: rankInfo.progress,
-		warnings: 0,
+		warnings: userCart.warnings.length,
 		bans: userCart.ban.count,
 		banStatus: userCart.ban.status,
 		awards: []
-	}
-
-	if (userWarning.length > 0){
-		profile.warnings = await getWarning(userWarning);
 	}
 
 	if(userCart.awards.length > 0){

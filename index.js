@@ -2,8 +2,10 @@ const Discord = require('discord.js');
 const bot = new Discord.Client();
 let config = require('./botconfig.json');
 let prefix = config.prefix;
+let cmd = require('./botComands');
 const mainChannel = '330779118427832320'; // ID Общий зал
 
+let checkCommand = require('./module/checkCommand');
 let messageCounter = require('./module/users/messageCounter');
 let editNickname = require('./module/users/editNickname');
 let conditionForMessage = require('./module/users/conditionForMessage');
@@ -11,6 +13,7 @@ let calculateRank = require('./module/users/calculateRank');
 let rankEdit = require('./module/users/rankEdit');
 let profileView = require('./module/users/profileView');
 let hiAndBye = require('./module/hiAndBye/hiAndBye');
+let warningCheck = require('./module/users/warningCheck');
 
 bot.on("message", async msg=>{
 
@@ -26,7 +29,6 @@ bot.on("message", async msg=>{
 		if (command === prefix + 'name') {
 			let say = msg.content.split(' ', 4);
 			say.shift();
-
 			await editNickname(msg.author, say, msg);
 		}
 
@@ -37,16 +39,27 @@ bot.on("message", async msg=>{
 			await profileView(msg.author, userCart, calcRank);
 		}
 
-		if (command === prefix + 'say' || msg.channel.id == 706564776138113084){
-
-			console.log(msg.content)
-			//bot.channels.cache.get(mainChannel).send(msg.content.substr(6))
-			bot.channels.cache.get('330779118427832320').send(msg.content.slice(4));
+		/* Сказать от имени бота */
+		if (await checkCommand(command, prefix, cmd.adminSay) && msg.channel.id == 706564776138113084){
+			let sum = await checkCommand(command, prefix, cmd.adminSay)
+			bot.channels.cache.get(mainChannel).send(msg.content.slice(sum));
 		}
+
+		/* Дать предупреждение */
+		if (await checkCommand(command, prefix, cmd.adminAddWarning) && msg.channel.id == 706564776138113084){
+			await warningCheck(msg.author, msg.content);
+		}
+
+		/* Тестовая  консоль */
+		if (command === prefix && msg.channel.id == 706564776138113084){
+		}
+
+
 
 		if (command === prefix + 'w') {
 			console.log("смена имени");
 			console.log(msg.member)
+			// bot.channels.cache.get('330779118427832320').send(msg.content.slice(4)); // отправить сообщение в нужный канал
 			// msg.guild.roles.cache.map(key => {console.log(key.name +' - '+ key.id)}) // получить id роли
 			//msg.member.setNickname(msg.content.replace('changeNick ', 'р'));
 			//msg.guild.members.get(msg.author.id).setNickname("Шашлык")
