@@ -13,7 +13,9 @@ let calculateRank = require('./module/users/calculateRank');
 let rankEdit = require('./module/users/rankEdit');
 let profileView = require('./module/users/profileView');
 let hiAndBye = require('./module/hiAndBye/hiAndBye');
-let warningCheck = require('./module/users/warningCheck');
+let warningAdd = require('./module/users/warningAdd');
+let commandGetParameters = require('./module/commandGetParameter');
+let banAdd = require('./module/users/banAdd');
 
 bot.on("message", async msg=>{
 
@@ -47,14 +49,34 @@ bot.on("message", async msg=>{
 
 		/* Дать предупреждение */
 		if (await checkCommand(command, prefix, cmd.adminAddWarning) && msg.channel.id == 706564776138113084){
-			await warningCheck(msg.author, msg.content);
+			let cmdParam = await commandGetParameters(msg.content, 4);
+			let userWarning = await warningAdd(msg, cmdParam);
+			let sayText = `<@!${cmdParam[0]}> Дорогая моя, ты получаешь предупрежение. Причина: \n${userWarning.warning.description}`;
+
+			if(userWarning.ban){
+				let userBan = await banAdd(msg, userWarning.ban.userID, userWarning.ban.description, null, userWarning.user);
+				sayText += `\nА еще ${userWarning.ban.description}. \n${userBan}`;
+			}
+
+			bot.channels.cache.get(mainChannel).send(sayText);
+		}
+		/* Дать бан */
+		if (await checkCommand(command, prefix, cmd.adminAddBan) && msg.channel.id == 706564776138113084){
+			let cmdParam = await commandGetParameters(msg.content, 3);
+			let userBan = await banAdd(msg, cmdParam[0], cmdParam[2], cmdParam[1]);
+
+			bot.channels.cache.get(mainChannel).send(userBan);
 		}
 
 		/* Тестовая  консоль */
 		if (command === prefix && msg.channel.id == 706564776138113084){
+			let member = msg.author;
+			//let guild = bot.guilds.cache.get(msg.guild.id);
+			let role = msg.guild.roles.find(role=>role.id == "695297927727284284");
+
+			console.log(role);
+			//member.roles.add(role)
 		}
-
-
 
 		if (command === prefix + 'w') {
 			console.log("смена имени");
