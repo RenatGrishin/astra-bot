@@ -49,18 +49,18 @@ async function banAdd(msg, userID, description, dateEnd=null, userInfoJSON=null)
 		userInfo.ban.end = dateEnd;
 		userInfo.ban.description = description;
 		if(userInfo.ban.count == 1){
-			userInfo.ban.description += `\nВ первый раз не дикообраз. \nБан спадет **${dateEnd}**`;
+			userInfo.ban.description += `\nВ первый раз не дикообраз.\nБан спадет **${dateEnd}**`;
 		}else if(userInfo.ban.count == 2){
-			userInfo.ban.description += `\nСладенькай, это уже 2ой бан. В следующий раз забаню навсегда. \nБан спадет **${dateEnd}**`;
+			userInfo.ban.description += `\nСладенькай, это уже 2ой бан. В следующий раз забаню навсегда.\nБан спадет **${dateEnd}**`;
 		}else if(userInfo.ban.count == 3){
-			userInfo.ban.description += `\nУуууу... Все сладенькай, ты получаешь вечный бан. \nНо если он выдан по ошибке, то отпишись админам, они все исправят. У тебя есть примерно неделя.`;
+			userInfo.ban.description += `\nУуууу... Все сладенькай, ты получаешь вечный бан.\nНо если он выдан по ошибке, то отпишись админам, они все исправят. У тебя есть примерно неделя.`;
 		}
 	}
 
 	let objTemplate = JSON.stringify(userInfo, null, 2);
 	fs.writeFileSync(folder+path.info, objTemplate, (err) => { if(err) throw err; });
 
-	return `<@!${userID}> Ты получаешь бан! Причина: \n${userInfo.ban.description}`
+	return `Ты получаешь бан! Причина: \n${userInfo.ban.description}`
 
 }
 

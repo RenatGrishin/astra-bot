@@ -16,6 +16,7 @@ let hiAndBye = require('./module/hiAndBye/hiAndBye');
 let warningAdd = require('./module/users/warningAdd');
 let commandGetParameters = require('./module/commandGetParameter');
 let banAdd = require('./module/users/banAdd');
+let banAndWarningTimeoutCheck = require('./module/users/banAndWarningTimeoutCheck');
 
 bot.on("message", async msg=>{
 
@@ -35,7 +36,8 @@ bot.on("message", async msg=>{
 		}
 
 		/*  Получить карточку о себе  */
-		if (command === prefix + 'me') {
+		if (await checkCommand(command, prefix, cmd.profileCart)) {
+			await banAndWarningTimeoutCheck(msg.author);
 			let calcRank = await calculateRank(msg.author);
 			let userCart = await rankEdit(msg.author, calcRank);
 			await profileView(msg.author, userCart, calcRank);
@@ -56,6 +58,11 @@ bot.on("message", async msg=>{
 			if(userWarning.ban){
 				let userBan = await banAdd(msg, userWarning.ban.userID, userWarning.ban.description, null, userWarning.user);
 				sayText += `\nА еще ${userWarning.ban.description}. \n${userBan}`;
+
+				/* Выдаем позорную роль в качестве бана */
+				let member = msg.guild.members.cache.get(`${cmdParam[0]}`);
+				let role = msg.guild.roles.cache.find(role=>role.id == "695297927727284284");
+				member.roles.add(role)
 			}
 
 			bot.channels.cache.get(mainChannel).send(sayText);
@@ -65,17 +72,17 @@ bot.on("message", async msg=>{
 			let cmdParam = await commandGetParameters(msg.content, 3);
 			let userBan = await banAdd(msg, cmdParam[0], cmdParam[2], cmdParam[1]);
 
-			bot.channels.cache.get(mainChannel).send(userBan);
+			/* Выдаем позорную роль в качестве бана */
+			let member = msg.guild.members.cache.get(`${cmdParam[0]}`);
+			let role = msg.guild.roles.cache.find(role=>role.id == "695297927727284284");
+			member.roles.add(role)
+
+			bot.channels.cache.get(mainChannel).send(`<@!${cmdParam[0]}> ${userBan}`);
 		}
 
 		/* Тестовая  консоль */
 		if (command === prefix && msg.channel.id == 706564776138113084){
-			let member = msg.author;
-			//let guild = bot.guilds.cache.get(msg.guild.id);
-			let role = msg.guild.roles.find(role=>role.id == "695297927727284284");
-
-			console.log(role);
-			//member.roles.add(role)
+			await banAndWarningTimeoutCheck(msg.author);
 		}
 
 		if (command === prefix + 'w') {
