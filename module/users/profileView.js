@@ -27,7 +27,7 @@ async function profileView(user, userCart, rankInfo) {
 	let userMessage = require(`./usersInfo/${path.messages}`);
 	let awardsJSON = require('./awards/awards');
 
-	console.log(userCart);
+	//console.log(userCart);
 
 	let profile = {
 		avatar: userCart.avatar,

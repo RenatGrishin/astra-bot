@@ -17,6 +17,7 @@ let warningAdd = require('./module/users/warningAdd');
 let commandGetParameters = require('./module/commandGetParameter');
 let banAdd = require('./module/users/banAdd');
 let banAndWarningTimeoutCheck = require('./module/users/banAndWarningTimeoutCheck');
+let roleValidation = require('./module/users/roleValidation');
 
 bot.on("message", async msg=>{
 
@@ -37,10 +38,11 @@ bot.on("message", async msg=>{
 
 		/*  Получить карточку о себе  */
 		if (await checkCommand(command, prefix, cmd.profileCart)) {
-			await banAndWarningTimeoutCheck(msg.author);
-			let calcRank = await calculateRank(msg.author);
-			let userCart = await rankEdit(msg.author, calcRank);
-			await profileView(msg.author, userCart, calcRank);
+			await banAndWarningTimeoutCheck(msg.author);          // Проверяем срок бана и предупреждений
+			let calcRank = await calculateRank(msg.author);       // считаем ранг
+			let userCart = await rankEdit(msg.author, calcRank);  // записываем ранг в файл с инфой
+			await roleValidation(msg, msg.author);                // сюда вставим проверку на роли.
+			await profileView(msg.author, userCart, calcRank);    // показываем профиль пользователя
 		}
 
 		/* Сказать от имени бота */
@@ -82,7 +84,11 @@ bot.on("message", async msg=>{
 
 		/* Тестовая  консоль */
 		if (command === prefix && msg.channel.id == 706564776138113084){
-			await banAndWarningTimeoutCheck(msg.author);
+			let roleList =[]
+			msg.guild.members.cache.get(`792364133386813440`).roles.cache.map(role=>roleList.push(role.id));
+			console.log(roleList)
+
+			console.log(msg.guild.roles.cache.find(role=>role.id == "330779118427832320"));
 		}
 
 		if (command === prefix + 'w') {
