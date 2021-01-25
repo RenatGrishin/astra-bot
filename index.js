@@ -84,11 +84,12 @@ bot.on("message", async msg=>{
 
 		/* Тестовая  консоль */
 		if (command === prefix && msg.channel.id == 706564776138113084){
-			let roleList =[]
-			msg.guild.members.cache.get(`792364133386813440`).roles.cache.map(role=>roleList.push(role.id));
-			console.log(roleList)
+			console.log(msg.author);
+			console.log('\n*************************\n');
+			console.log(msg.guild.members.cache.get(`792364133386813440`).user)
+			console.log('\n*************************\n');
+			msg.guild.members.cache.map(user=>console.log(user.id));
 
-			console.log(msg.guild.roles.cache.find(role=>role.id == "330779118427832320"));
 		}
 
 		if (command === prefix + 'w') {
@@ -116,6 +117,33 @@ bot.on("guildMemberRemove", async member => {
 
 bot.login(config.token);
 
-bot.on('ready', () => {
+
+/* Проверка на ранги всех пользователей */
+async function checkAllUsersRank(){
+	let allUsers = [];
+	bot.guilds.cache.find(key=>key == mainChannel).members.cache.map(member => allUsers.push(member));
+	for (let i=0; i < allUsers.length; i++){
+		console.log(allUsers[i].user.id)
+		await banAndWarningTimeoutCheck(allUsers[i].user);                    // Проверяем срок бана и предупреждений
+		let calcRank = await calculateRank(allUsers[i].user);                 // считаем ранг
+		await rankEdit(allUsers[i].user, calcRank);                           // записываем ранг в файл с инфой
+		await roleValidation(bot, allUsers[i].user, true, mainChannel); // сюда вставим проверку на роли.
+	}
+}
+
+/* Событие по времени */
+async function callTimeEvent(){
+	let dt = new Date();
+	if(dt.getHours() == 1){
+		await checkAllUsersRank();
+	}
+}
+
+bot.on('ready', async (msg) => {
 	console.log(`${bot.user.username} online`);
+	setInterval(()=>{callTimeEvent()}, 1000*60*60); // Запускать функцию с интервалом в час
+
+	// bot.user.setPresence ({status: 'dmd', game:{name: 'Gay Porn', type: 3}});
+	// bot.user.setPresence ({status: 'dmd', game:{name: 'Голубая луна (Борис Моисеев)', type: 2}});
+	// bot.user.setPresence ({game:{name: 'Counter-Strike: Gay Operation', status: "online"}});
 });
