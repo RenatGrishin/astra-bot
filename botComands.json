@@ -12,5 +12,7 @@
   "adminAddBan": ["ban", "бан"],
   "adminDeleteBan": ["dban","убан"],
   "adminAddAward": ["award", "награда"],
-  "adminDeleteAward": ["daward", "унаграда"]
+  "adminDeleteAward": ["daward", "унаграда"],
+  "adminGuardProfile": ["guard", "защитить"],
+  "adminGetUserAndId": ["users", "люди"]
 }
