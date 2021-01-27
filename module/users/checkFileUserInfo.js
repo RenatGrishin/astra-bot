@@ -16,7 +16,7 @@ async function checkFileUserInfo(user){
 		newInfo.mainID = user.id;
 		newInfo.mainNick = user.username;
 		newInfo.discriminator = user.discriminator;
-		newInfo.avatar = user.avatar;
+		newInfo.avatar = user.displayAvatarURL({format: 'jpg'});
 
 		let objTemplate = JSON.stringify(newInfo, null, 2);
 		await fs.writeFileSync(userInfoJSON, objTemplate, (err) => { if(err) throw err; });

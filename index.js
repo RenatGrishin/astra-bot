@@ -19,6 +19,7 @@ let banAdd = require('./module/users/banAdd');
 let banAndWarningTimeoutCheck = require('./module/users/banAndWarningTimeoutCheck');
 let roleValidation = require('./module/users/roleValidation');
 let guardUser = require('./module/users/guardUser');
+let rankImage = require('./module/users/rankImage');
 
 bot.on("message", async msg=>{
 
@@ -110,11 +111,11 @@ bot.on("message", async msg=>{
 
 			/* Тестовая  консоль */
 			if (command === prefix){
-				console.log(msg.author);
-				console.log('\n*************************\n');
-				console.log(msg.guild.members.cache.get(`792364133386813440`).user)
-				console.log('\n*************************\n');
-				msg.guild.members.cache.map(user=>console.log(user.id));
+				console.log("Тестовая команда");
+				let te = msg.guild.members.cache.find(member => member.user.id == '224095657223258112')
+					//member == 148422300243460096 {console.log(`${member.user.displayAvatarURL}`)})
+				let img = te.user.displayAvatarURL({format: 'jpg'});
+				await rankImage(msg, img);
 			}
 		}
 
