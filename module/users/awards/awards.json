@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "img": "https://cdn.discordapp.com/attachments/706564776138113084/804465377207779328/01.png",
+        "title": "Чипирован - Спутник V",
+        "point": 10
+    },
+    {
+        "id": 2,
+        "img": "https://cdn.discordapp.com/attachments/706564776138113084/804445637239635968/01.png",
+        "title": "Second test award",
+        "point": 4
+    },
+    {
+        "id": 3,
+        "img": "https://cdn.discordapp.com/attachments/706564776138113084/804445637239635968/01.png",
+        "title": "threeeeee",
+        "point": 11
+    }
+]

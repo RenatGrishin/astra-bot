@@ -1,0 +1,24 @@
+{
+    "mainID": 0,
+    "mainNick": "",
+    "avatar": "",
+
+    "discriminator": 0,
+    "nick": "",
+    "name": "",
+    
+    "rank": 0,
+	"fix": false,
+
+    "ban": {
+        "count": 0,
+        "status": false,
+        "description": "",
+        "end": ""
+    },
+    
+    "warnings": [],
+    "warningPoint": 0,
+
+	"awards": []
+  }
