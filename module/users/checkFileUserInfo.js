@@ -4,6 +4,7 @@ const messages = require('./usersInfo/template/template_messages');
 let folder = './module/users/usersInfo/';
 
 async function checkFileUserInfo(user){
+
 	const userInfoJSON = folder + user.id+'.json';
 	const userMessagesJSON = folder + user.id+'_messages.json';
 
@@ -29,8 +30,6 @@ async function checkFileUserInfo(user){
 
 		let objTemplate = JSON.stringify(newMessage, null, 2);
 		await fs.writeFileSync(userMessagesJSON, objTemplate, (err) => { if(err) throw err; });
-
-		console.log(objTemplate);
 	}
 
 	return {

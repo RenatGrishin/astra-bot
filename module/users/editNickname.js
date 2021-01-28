@@ -28,19 +28,20 @@ async function editNickname (user, arrMess, msg){
 			info.message = `<@${user.id}> \n**!name** НИК ИМЯ`;
 		}
 	}else{
-		let path = await checkFileUserInfo(user);
-		let userInfo = require(`./usersInfo/${path.info}`);
+		let userInfo = require(`./usersInfo/${user.info}`);
 
 		userInfo.nick = arrMess[0];
 		userInfo.name = arrMess[1];
 		if(arrMess[2]) userInfo.name = userInfo.name +' '+ arrMess[2];
 
 		let objTemplate = JSON.stringify(userInfo, null, 2);
-		fs.writeFileSync(folder+path.info, objTemplate, (err) => { if(err) throw err; });
+		fs.writeFileSync(folder+user.info, objTemplate, (err) => { if(err) throw err; });
 
 		info.error = false;
-		info.message = `Теперь я буду звать тебя – <@${user.id}>`;
+		info.message = `Теперь я буду звать тебя – <@${userInfo.mainID}>`;
 		info.newNick = `${userInfo.nick} (${userInfo.name})`;
+
+		console.log(`Изменил ник: ${userInfo.mainNick} - ${userInfo.nick} (${userInfo.name})`)
 	}
 
 	if(info.error){

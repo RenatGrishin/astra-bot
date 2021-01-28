@@ -1,4 +1,5 @@
-let checkFileUserInfo = require('./checkFileUserInfo');
+let fs = require('fs');
+let folder = './module/users/usersInfo/'
 
 function rank(rank, points){
 	//points = 147;
@@ -42,19 +43,18 @@ function rank(rank, points){
 }
 
 async function calculateRank(user, warningFactor=5, banPoint=300) {
-	let path = await checkFileUserInfo(user)
 
 	let rankJSON = require('./rank/rank');
 	let awardJSON = require('./awards/awards');
-	let info = require('./usersInfo/'+ path.info);
-	let messages = require('./usersInfo/'+ path.messages);
+	let userInfo = require('./usersInfo/'+ user.info);
+	let messages = require('./usersInfo/'+ user.messages);
 
-	let infoAwards = info.awards;
+	let infoAwards = userInfo.awards;
 	let allAwardPoint = 0;
-	let allWarningPoint = info.warningPoint * warningFactor;
+	let allWarningPoint = userInfo.warningPoint * warningFactor;
 
 	/* Очки за Бан */
-	let allBanPoint = info.ban.count * banPoint;
+	let allBanPoint = userInfo.ban.count * banPoint;
 
 	/* Очки за награды */
 	for(let i=0 ; i < infoAwards.length ; i++){
@@ -74,6 +74,13 @@ async function calculateRank(user, warningFactor=5, banPoint=300) {
 		rank: rankPoints.rank,
 		progress: rankPoints.progress
 	}
+	console.log(`Считаем ранг и записываем в файл`)
+
+	userInfo.rank = userRank.rank;
+
+	let objTemplate = JSON.stringify(userInfo, null, 2);
+	fs.writeFileSync(folder+user.info, objTemplate, (err) => { if(err) throw err; });
+
 	return userRank;
 }
 

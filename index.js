@@ -5,19 +5,20 @@ let prefix = config.prefix;
 let cmd = require('./botComands');
 const mainChannel = '330779118427832320'; // ID Общий зал
 
-let checkCommand = require('./module/checkCommand');
+let checkFileUserInfo = require('./module/users/checkFileUserInfo');      // Проверка на наличия userInfo файлов
+let checkCommand = require('./module/checkCommand');                      // Получить длинну команды + пробел
 let messageCounter = require('./module/users/messageCounter');
-let editNickname = require('./module/users/editNickname');
+let editNickname = require('./module/users/editNickname');                // Изменить себе ник
 let conditionForMessage = require('./module/users/conditionForMessage');
-let calculateRank = require('./module/users/calculateRank');
+let calculateRank = require('./module/users/calculateRank');              // Считаем ранг
 let rankEdit = require('./module/users/rankEdit');
-let profileView = require('./module/users/profileView');
+let profileView = require('./module/users/profileView');                  // Получить профиль пользователя
 let hiAndBye = require('./module/hiAndBye/hiAndBye');
 let warningAdd = require('./module/users/warningAdd');
-let commandGetParameters = require('./module/commandGetParameter');
+let commandGetParameters = require('./module/commandGetParameter');       // Получить из строки параметры для ф-ции
 let banAdd = require('./module/users/banAdd');
-let banAndWarningTimeoutCheck = require('./module/users/banAndWarningTimeoutCheck');
-let roleValidation = require('./module/users/roleValidation');
+let banAndWarningTimeoutCheck = require('./module/users/banAndWarningTimeoutCheck'); // Пр-ка истечение бана и пред-я
+let roleValidation = require('./module/users/roleValidation');            // Проверка на соответсве роли к рангу
 let guardUser = require('./module/users/guardUser');
 let rankImage = require('./module/users/rankImage');
 
@@ -26,25 +27,28 @@ bot.on("message", async msg=>{
 	if (!msg.author.bot){
 		let command = msg.content.split(' ', 1)[0].toLowerCase();
 
-		/* Записываем сообщение в счетчик */
+		/* Записываем сообщение в счетчик сообщений */
 		if( await conditionForMessage(msg.content, ['!']) ){
-			await messageCounter(msg.author, msg);
+			let user = await checkFileUserInfo(msg.author);
+			await messageCounter(user, msg);
 		}
 
 		/*  Изменить себе ник  */
 		if (await checkCommand(command, prefix, cmd.editNick)) {
 			let say = msg.content.split(' ', 4);
 			say.shift();
-			await editNickname(msg.author, say, msg);
+
+			let user = await checkFileUserInfo(msg.author);
+			await editNickname(user, say, msg);
 		}
 
 		/*  Получить карточку о себе  */
 		if (await checkCommand(command, prefix, cmd.profileCart)) {
-			await banAndWarningTimeoutCheck(msg.author);          // Проверяем срок бана и предупреждений
-			let calcRank = await calculateRank(msg.author);       // считаем ранг
-			let userCart = await rankEdit(msg.author, calcRank);  // записываем ранг в файл с инфой
-			await roleValidation(msg, msg.author);                // сюда вставим проверку на роли.
-			await profileView(msg.author, userCart, calcRank);    // показываем профиль пользователя
+			let user = await checkFileUserInfo(msg.author);
+			await banAndWarningTimeoutCheck(user);                  // Проверяем срок бана и предупреждений
+			let calcRank = await calculateRank(user);               // считаем ранг
+			await roleValidation(msg.guild, user);                  // сюда вставим проверку на роли.
+			await profileView(user, calcRank);                      // показываем профиль пользователя
 		}
 
 		/*  Команды Администартора  */
@@ -60,27 +64,19 @@ bot.on("message", async msg=>{
 			if (await checkCommand(command, prefix, cmd.adminGuardProfile)){
 				console.log('Защита пользователя от бота');
 				let cmdParam = await commandGetParameters(msg.content, 2);
-				let setGuard = await guardUser(msg, cmdParam[0], cmdParam[1]);
-				if (setGuard.error) {
-					msg.channel.send(setGuard.error)
-				}else{
-					setGuard.compl ? msg.channel.send("Пользователь под защитой.") : msg.channel.send("Пользователь в моей власти");
-				}
+				await guardUser(msg, cmdParam[0], cmdParam[1]);
 			}
 
 			/* Получить всех пользователей и их id */
 			if (await checkCommand(command, prefix, cmd.adminGetUserAndId)){
 				console.log('Показать всех пользователей в чате');
-				//let te = msg.guild.members.cache;
 				msg.guild.members.cache.map(member => {console.log(`${member.user.id} - ${member.user.username}`)})
-
-				//console.log(te);
 			}
 
 			/* Дать предупреждение */
 			if (await checkCommand(command, prefix, cmd.adminAddWarning)){
 				let cmdParam = await commandGetParameters(msg.content, 4);
-				let userWarning = await warningAdd(msg, cmdParam);
+				let userWarning = await warningAdd(msg, cmdParam, user);
 				let sayText = `<@!${cmdParam[0]}> Дорогая моя, ты получаешь предупрежение. Причина: \n${userWarning.warning.description}`;
 
 				if(userWarning.ban){
@@ -155,7 +151,11 @@ async function checkAllUsersRank(){
 		await banAndWarningTimeoutCheck(allUsers[i].user);                    // Проверяем срок бана и предупреждений
 		let calcRank = await calculateRank(allUsers[i].user);                 // считаем ранг
 		await rankEdit(allUsers[i].user, calcRank);                           // записываем ранг в файл с инфой
+		/*
+		Функция проверк на роли переработана, нужно ее исправить
+		msgBot = msg.guilds.cache.find(key=>key == mainChannel)
 		await roleValidation(bot, allUsers[i].user, true, mainChannel); // сюда вставим проверку на роли.
+		*/
 	}
 }
 

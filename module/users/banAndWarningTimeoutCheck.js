@@ -1,5 +1,4 @@
 let fs = require('fs');
-let checkFileUserInfo = require('./checkFileUserInfo');
 let folder = './module/users/usersInfo/';
 
 function timeoutCheck (myDate){
@@ -13,8 +12,7 @@ function timeoutCheck (myDate){
 }
 
 async function banAndWarningTimeoutCheck(user) {
-	let path = await checkFileUserInfo(user);
-	let userInfo = require(`./usersInfo/${path.info}`);
+	let userInfo = require(`./usersInfo/${user.info}`);
 
 	let newWarning = [];
 	let edited = {
@@ -39,9 +37,9 @@ async function banAndWarningTimeoutCheck(user) {
 		userInfo.warnings = newWarning;
 	}
 	if (edited.ban || edited.warning) {
-		console.log("Ban and Warning check: Writing file")
+		console.log("Проверка на срок действий банов и предупреждений")
 		let objTemplate = JSON.stringify(userInfo, null, 2);
-		fs.writeFileSync(folder+path.info, objTemplate, (err) => { if(err) throw err; });
+		fs.writeFileSync(folder+user.info, objTemplate, (err) => { if(err) throw err; });
 	}
 
 }

@@ -28,8 +28,13 @@ async function guardUser(msg, user, setGuard) {
 		let objTemplate = JSON.stringify(userInfo, null, 2);
 		fs.writeFileSync(folder+path.info, objTemplate, (err) => { if(err) throw err; });
 	}
-	outcome.error ? console.log("Ошибка в имени или параметре") : console.log("Защита: " +outcome.compl);
-	return outcome;
+
+	// Вывод сообщения в чат
+	if(outcome.error){
+		msg.channel.send(outcome.error)
+	}else{
+		outcome.compl ? msg.channel.send("Пользователь под защитой.") : msg.channel.send("Пользователь в моей власти");
+	}
 }
 
 module.exports = guardUser;

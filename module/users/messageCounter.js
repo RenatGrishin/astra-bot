@@ -1,16 +1,13 @@
 let fs = require('fs');
-let checkFileUserInfo = require('./checkFileUserInfo');
 let folder = './module/users/usersInfo/';
 
 
-async function messageCounter (user, msg = null) {
-	let path = await checkFileUserInfo(user);
-	let messages = require(`./usersInfo/${path.messages}`);
-
+async function messageCounter (userFile, msg = null) {
+	let messages = require(`./usersInfo/${userFile.messages}`);
 	messages.messages++;
 
 	let objTemplate = JSON.stringify(messages, null, 2);
-	fs.writeFileSync(folder+path.messages, objTemplate, (err) => { if(err) throw err; });
+	fs.writeFileSync(folder+userFile.messages, objTemplate, (err) => { if(err) throw err; });
 }
 
 

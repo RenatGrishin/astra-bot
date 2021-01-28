@@ -22,29 +22,29 @@ async function getAwards(awards, awardList){
 	return list;
 }
 
-async function profileView(user, userCart, rankInfo) {
-	let path = await checkFileUserInfo(user);
-	let userMessage = require(`./usersInfo/${path.messages}`);
+async function profileView(user, rankInfo) {
+	let userInfo = require(`./usersInfo/${user.info}`);
+	let userMessage = require(`./usersInfo/${user.messages}`);
 	let awardsJSON = require('./awards/awards');
 
-	//console.log(userCart);
+	//console.log(userInfo);
 
 	let profile = {
-		avatar: userCart.avatar,
-		nick: userCart.nick,
-		name: userCart.name,
+		avatar: userInfo.avatar,
+		nick: userInfo.nick,
+		name: userInfo.name,
 		messages: userMessage.messages,
-		rank: userCart.rank,
+		rank: userInfo.rank,
 		points: rankInfo.points,
 		progress: rankInfo.progress,
-		warnings: userCart.warnings.length,
-		bans: userCart.ban.count,
-		banStatus: userCart.ban.status,
+		warnings: userInfo.warnings.length,
+		bans: userInfo.ban.count,
+		banStatus: userInfo.ban.status,
 		awards: []
 	}
 
-	if(userCart.awards.length > 0){
-		profile.awards = await getAwards(userCart.awards, awardsJSON);
+	if(userInfo.awards.length > 0){
+		profile.awards = await getAwards(userInfo.awards, awardsJSON);
 	}
 
 	console.log(profile);

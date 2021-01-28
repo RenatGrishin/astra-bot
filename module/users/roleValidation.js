@@ -10,13 +10,13 @@ async function getRoleRank (rank, list){
 	}
 }
 
-async function roleValidation(msg, user, isBot=false, mainChannel=0) {
-	let path = await checkFileUserInfo(user);
-	let userInfo = require(`./usersInfo/${path.info}`);
-	let msgBot = msg.guild;
+async function roleValidation(guild, user) {
+	let userInfo = require(`./usersInfo/${user.info}`);
 
-	if (isBot) msgBot = msg.guilds.cache.find(key=>key == mainChannel)
-	if(userInfo.fix) return false; // Защащен ли профиль
+	if(userInfo.fix){
+		console.log("Пользователь защищен от бота");
+		return false;
+	}
 
 	if (!userInfo.ban.status){
 		let roleList = [];
@@ -27,7 +27,7 @@ async function roleValidation(msg, user, isBot=false, mainChannel=0) {
 			delete: []
 		};
 
-		msgBot.members.cache.get(userInfo.mainID).roles.cache.map(
+		guild.members.cache.get(userInfo.mainID).roles.cache.map(
 			(role) => {
 				if (role.id != "330779118427832320") roleList.push(role.id) // Если роль не everyone
 			}
@@ -44,20 +44,20 @@ async function roleValidation(msg, user, isBot=false, mainChannel=0) {
 		}
 
 		if (newRole.add != newRole.actual){
-			let member = msgBot.members.cache.get(`${userInfo.mainID}`);
+			let member = guild.members.cache.get(`${userInfo.mainID}`);
 
 			if (newRole.delete.length > 0){
 				for (let i=0; i < newRole.delete.length; i++){
-					let roleDelete = msgBot.roles.cache.find(role=>role.id == newRole.delete[i]);
+					let roleDelete = guild.roles.cache.find(role=>role.id == newRole.delete[i]);
 					member.roles.remove(roleDelete);
 				}
 			}
 			if (newRole.actual){
-				let roleDelete = msgBot.roles.cache.find(role=>role.id == newRole.actual);
+				let roleDelete = guild.roles.cache.find(role=>role.id == newRole.actual);
 				member.roles.remove(roleDelete);
 			}
-			console.log("Add Role: " +newRole.add);
-			let roleAdd = msgBot.roles.cache.find(role=>role.id == newRole.add.roleId);
+			console.log("Установлена новая роль");
+			let roleAdd = guild.roles.cache.find(role=>role.id == newRole.add.roleId);
 			member.roles.add(roleAdd);
 		}
 	}
