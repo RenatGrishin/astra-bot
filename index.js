@@ -48,7 +48,9 @@ bot.on("message", async msg=>{
 			await banAndWarningTimeoutCheck(user);                  // Проверяем срок бана и предупреждений
 			let calcRank = await calculateRank(user);               // считаем ранг
 			await roleValidation(msg.guild, user);                  // сюда вставим проверку на роли.
-			await profileView(user, calcRank);                      // показываем профиль пользователя
+			let info = await profileView(user, calcRank);           // показываем профиль пользователя
+
+			await rankImage(info, msg);
 		}
 
 		/*  Команды Администартора  */
@@ -145,17 +147,22 @@ bot.login(config.token);
 /* Проверка на ранги всех пользователей */
 async function checkAllUsersRank(){
 	let allUsers = [];
-	bot.guilds.cache.find(key=>key == mainChannel).members.cache.map(member => allUsers.push(member));
+	/*bot.guilds.cache.find(key=>key == mainChannel).members.cache.map((member) => {
+		allUsers.push(member.user, member.user.displayAvatarURL({format: 'jpg'}))
+	});*/
+	let forList = bot.guilds.cache.find(key=>key == mainChannel).members.cache.map(member=>member[1]);
+	//for (let i=0; i < )
+
 	for (let i=0; i < allUsers.length; i++){
-		console.log(allUsers[i].user.id)
-		await banAndWarningTimeoutCheck(allUsers[i].user);                    // Проверяем срок бана и предупреждений
-		let calcRank = await calculateRank(allUsers[i].user);                 // считаем ранг
-		await rankEdit(allUsers[i].user, calcRank);                           // записываем ранг в файл с инфой
-		/*
-		Функция проверк на роли переработана, нужно ее исправить
-		msgBot = msg.guilds.cache.find(key=>key == mainChannel)
-		await roleValidation(bot, allUsers[i].user, true, mainChannel); // сюда вставим проверку на роли.
-		*/
+		//console.log(`Проверяем пользователя: ${allUsers[i].user.id}`)
+		console.log(allUsers[i])
+		let user = await checkFileUserInfo(allUsers[i]);
+		await banAndWarningTimeoutCheck(user);                            // Проверяем срок бана и предупреждений
+		let calcRank = await calculateRank(user);                         // считаем ранг
+		await rankEdit(user, calcRank);                                   // записываем ранг в файл с инфой
+
+		let msgBot = msg.guilds.cache.find(key=>key == mainChannel);
+		await roleValidation(msgBot, user);                               // сюда вставим проверку на роли.
 	}
 }
 
@@ -169,6 +176,8 @@ async function callTimeEvent(){
 
 bot.on('ready', async (msg) => {
 	console.log(`${bot.user.username} online`);
+
+	//await checkAllUsersRank(); // неработает
 	setInterval(()=>{callTimeEvent()}, 1000*60*60); // Запускать функцию с интервалом в час
 
 	// bot.user.setPresence ({status: 'dmd', game:{name: 'Gay Porn', type: 3}});

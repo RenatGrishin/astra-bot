@@ -1,94 +1,126 @@
 const {createCanvas, loadImage} = require('canvas');
 const {MessageAttachment} = require('discord.js');
 
-async function rankImage(msg, img) {
+function even_or_odd(number, step) {
+	if (number % 2 === 0){
+		//целое
+		return { img: { y: step, x: 10 },
+					 title: { x: step+12, y: 36 },
+					step: step }
+	}else{
+		return { img: { y: step, x: 210 },
+			title: { x: step+12, y: 236 },
+			step: step+26 }
+	}
+}
 
-	let userObj = {
-		avatar: img,
-		nick: 'Шашлык',
-		name: 'Артем',
-		messages: 132346,
-		rank: 19,
-		points: 131904,
-		progress: 40,
-		warnings: 1,
-		bans: 1,
-		banStatus: false,
-		awards: [
-			{ id: 1, img: '1.png', title: 'Test Award', point: 7 },
-			{ id: 3, img: '3.png', title: 'threeeeee', point: 11 }
-		]
+async function rankImage(info, msg) {
+	let boardHeight = 80;
+	if (info.awards.length) {
+		boardHeight = 90 + 26 * Math.ceil(info.awards.length / 2);
 	}
 
-	const canvas = createCanvas(400, 300);
+	if(info.avatar == 'https://cdn.discordapp.com/embed/avatars/1.png'){
+		info.avatar = 'https://cdn.discordapp.com/attachments/706564776138113084/804439105680965662/02.jpg';
+	}else if(info.avatar == 'https://cdn.discordapp.com/embed/avatars/2.png'){
+		info.avatar = 'https://cdn.discordapp.com/attachments/706564776138113084/804439110424199198/04.jpg';
+	}else if(info.avatar == 'https://cdn.discordapp.com/embed/avatars/3.png'){
+		info.avatar = 'https://cdn.discordapp.com/attachments/706564776138113084/804439109535662080/03.jpg';
+	}else if(info.avatar == 'https://cdn.discordapp.com/embed/avatars/4.png'){
+		info.avatar = 'https://cdn.discordapp.com/attachments/706564776138113084/804439105357873162/01.jpg';
+	}
+
+	const canvas = createCanvas(400, boardHeight);
 	const ctx = canvas.getContext("2d");
 
-	ctx.strokeStyle = "#103345";
-	ctx.fillStyle = "#103345";
+	ctx.strokeStyle = "#151515";
+	ctx.fillStyle = "#151515";
 	ctx.fillRect(0, 0, 400, 300);
+	let bg = await loadImage(`https://cdn.discordapp.com/attachments/706564776138113084/804463872156237844/board.png`);
+	ctx.drawImage(bg, 0,0, 400,300);
+
+	/*
+	Чисто для наград
+	https://cdn.discordapp.com/attachments/706564776138113084/804463877139857488/board_2.png
+	*/
+
 
 	// аватар
 	ctx.strokeStyle = "#ffffff";
 	ctx.strokeRect(10, 10, 60, 60);
 
-	let avatar = await loadImage(userObj.avatar);
+	let avatar = await loadImage(info.avatar);
 	ctx.drawImage(avatar, 12,12, 56,56);
 
 	//Ник
 	ctx.font = "16px Arial";
 	ctx.fillStyle = "#ffffff";
-	ctx.fillText(userObj.nick, 80, 30);
-	ctx.fillText(userObj.name, 80, 60);
+	ctx.fillText(info.nick, 80, 30);
+	ctx.fillText(info.name, 80, 60);
 
 	//Предупреждения
-	ctx.font = "16px Arial";
-	ctx.fillStyle = "#ffea00";
-	ctx.fillText("! ! ! ! !", 350, 30);
+	//info.warnings = 5;
+	let warningPointPositionX = 343;
+	for(let i=0; i < info.warnings; i++){
+		let warningPoint = await loadImage(`https://cdn.discordapp.com/attachments/706564776138113084/804426900889796649/x-a.png`);
+		ctx.drawImage(warningPoint, warningPointPositionX,20, 8,8);
+		warningPointPositionX += 9
+	}
 
 	//Ранг
 	ctx.font = "22px Arial";
+	ctx.textAlign = "center";
 	ctx.fillStyle = "#ffffff";
-	ctx.fillText(userObj.rank, 255, 30);
+	ctx.fillText(`${info.rank}`, 268, 30);
 	//Шкала
 	ctx.strokeStyle = "#ffffff";
 	ctx.strokeRect(220, 40, 100, 6);
 	ctx.fillStyle = "#ffffff";
-	ctx.fillRect(220, 40, userObj.progress, 6);
+	ctx.fillRect(220, 40, info.progress, 6);
 	//Очки
 	ctx.font = "14px Arial";
 	ctx.textAlign = "center";
 	ctx.fillStyle = "#ffffff";
-	ctx.fillText(userObj.points +' xp', 267, 62);
+	ctx.fillText(info.points +' xp', 269, 62);
+
 
 	//Баны
-	ctx.font = "14px Arial";
-	ctx.textAlign = "left";
-	ctx.fillStyle = "#ff0000";
-	ctx.fillText("BAN", 355, 65);
+	if(info.banStatus){
+		let ban = await loadImage(`https://cdn.discordapp.com/attachments/706564776138113084/804426892857966632/ban-b.png`);
+		ctx.drawImage(ban, 344,45, 42,21);
+	}
 
-	ctx.strokeStyle = "#ff0000";
-	ctx.strokeRect(349, 50, 40, 20);
+	let banPointPositionX = 346;
+	for(let i=0; i < info.bans; i++){
+		let banPoint = await loadImage(`https://cdn.discordapp.com/attachments/706564776138113084/804426972070805594/banPoint-a.png`);
+		ctx.drawImage(banPoint, banPointPositionX,35, 10,10);
+		banPointPositionX += 16
+	}
+
+	/* Награды */
+
+	let awardVerticalStep = 90;
+	for(let i=0; i < info.awards.length; i++){
+		let awardPosition = even_or_odd(i, awardVerticalStep);
+		let awardPoint = await loadImage(info.awards[i].img);
+		ctx.drawImage(awardPoint, awardPosition.img.x, awardPosition.img.y, 16,16);
+
+		ctx.font = "12px Arial";
+		ctx.textAlign = "left";
+		ctx.fillStyle = "#a6a6a6";
+		ctx.fillText(info.awards[i].title, awardPosition.title.y, awardPosition.title.x);
+
+		awardVerticalStep = awardPosition.step;
+	}
+/*
 
 	ctx.strokeStyle = "#ff0000";
 	ctx.beginPath();
-	ctx.arc(353, 43,3,0,Math.PI*2,true);
+	ctx.arc(369, 43,2,0,Math.PI*2,true);
 	ctx.closePath();
 	ctx.stroke();
 	ctx.fill();
-
-	ctx.strokeStyle = "#ff0000";
-	ctx.beginPath();
-	ctx.arc(369, 43,3,0,Math.PI*2,true);
-	ctx.closePath();
-	ctx.stroke();
-	ctx.fill();
-
-	ctx.strokeStyle = "#ff0000";
-	ctx.beginPath();
-	ctx.arc(385, 43,3,0,Math.PI*2,true);
-	ctx.closePath();
-	ctx.stroke();
-	ctx.fill();
+*/
 
 
 	/*ctx.font = '30px Impact'
