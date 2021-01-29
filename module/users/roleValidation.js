@@ -13,12 +13,12 @@ async function getRoleRank (rank, list){
 async function roleValidation(guild, user) {
 	let userInfo = require(`./usersInfo/${user.info}`);
 
-	if(userInfo.fix){
+	/*if(userInfo.fix){
 		console.log("Пользователь защищен от бота");
 		return false;
-	}
+	}*/
 
-	if (!userInfo.ban.status){
+	if (!userInfo.ban.status && !userInfo.fix){
 		let roleList = [];
 
 		let newRole = {
@@ -43,7 +43,7 @@ async function roleValidation(guild, user) {
 			}
 		}
 
-		if (newRole.add != newRole.actual){
+		if (newRole.add.roleId != newRole.actual || newRole.delete){
 			let member = guild.members.cache.get(`${userInfo.mainID}`);
 
 			if (newRole.delete.length > 0){
@@ -60,7 +60,17 @@ async function roleValidation(guild, user) {
 			let roleAdd = guild.roles.cache.find(role=>role.id == newRole.add.roleId);
 			member.roles.add(roleAdd);
 		}
+	}else{
+		let te = guild.members.cache.find(member => member.user.id == userInfo.mainID);
+		let roleMap = [];
+		te.roles.cache.map(role =>{ roleMap.push(role.name) });
+		return roleMap[0];
 	}
+
+	let te = guild.members.cache.find(member => member.user.id == userInfo.mainID);
+	let roleMap = [];
+	te.roles.cache.map(role =>{ roleMap.push(role.name) });
+	return roleMap[0];
 }
 
 module.exports = roleValidation;

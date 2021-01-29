@@ -11,7 +11,6 @@ let messageCounter = require('./module/users/messageCounter');
 let editNickname = require('./module/users/editNickname');                // Изменить себе ник
 let conditionForMessage = require('./module/users/conditionForMessage');
 let calculateRank = require('./module/users/calculateRank');              // Считаем ранг
-let rankEdit = require('./module/users/rankEdit');
 let profileView = require('./module/users/profileView');                  // Получить профиль пользователя
 let hiAndBye = require('./module/hiAndBye/hiAndBye');
 let warningAdd = require('./module/users/warningAdd');
@@ -21,6 +20,7 @@ let banAndWarningTimeoutCheck = require('./module/users/banAndWarningTimeoutChec
 let roleValidation = require('./module/users/roleValidation');            // Проверка на соответсве роли к рангу
 let guardUser = require('./module/users/guardUser');
 let rankImage = require('./module/users/rankImage');
+let banDelete = require('./module/users/banDelete');
 
 bot.on("message", async msg=>{
 
@@ -47,10 +47,22 @@ bot.on("message", async msg=>{
 			let user = await checkFileUserInfo(msg.author);
 			await banAndWarningTimeoutCheck(user);                  // Проверяем срок бана и предупреждений
 			let calcRank = await calculateRank(user);               // считаем ранг
-			await roleValidation(msg.guild, user);                  // сюда вставим проверку на роли.
+			let mainRole = await roleValidation(msg.guild, user);   // сюда вставим проверку на роли.
 			let info = await profileView(user, calcRank);           // показываем профиль пользователя
+			await rankImage(info, msg, mainRole);
+		}
 
-			await rankImage(info, msg);
+		/* Получить карточку другого игрока */
+		if (await checkCommand(command, prefix, cmd.getProfileFriend)) {
+			let cmdParam = await commandGetParameters(msg.content, 1);
+			cmdParam[0] = cmdParam[0].slice(3, -1);
+			let member = msg.guild.members.cache.get(`${cmdParam[0]}`);
+			let user = await checkFileUserInfo(member);
+			await banAndWarningTimeoutCheck(user);                  // Проверяем срок бана и предупреждений
+			let calcRank = await calculateRank(user);               // считаем ранг
+			let mainRole = await roleValidation(msg.guild, user);   // сюда вставим проверку на роли.
+			let info = await profileView(user, calcRank);           // показываем профиль пользователя
+			await rankImage(info, msg, mainRole);
 		}
 
 		/*  Команды Администартора  */
@@ -71,15 +83,20 @@ bot.on("message", async msg=>{
 
 			/* Получить всех пользователей и их id */
 			if (await checkCommand(command, prefix, cmd.adminGetUserAndId)){
-				console.log('Показать всех пользователей в чате');
+				console.log('Показать всех пользователей на в зале');
 				msg.guild.members.cache.map(member => {console.log(`${member.user.id} - ${member.user.username}`)})
+			}
+			/* Получить все роли и их id */
+			if (await checkCommand(command, prefix, cmd.adminGetRoleAndId)){
+				console.log('Показать все роли в таверне');
+				msg.guild.roles.cache.map(role => {console.log(`${role.id} - ${role.name}`)})
 			}
 
 			/* Дать предупреждение */
 			if (await checkCommand(command, prefix, cmd.adminAddWarning)){
 				let cmdParam = await commandGetParameters(msg.content, 4);
-				let userWarning = await warningAdd(msg, cmdParam, user);
-				let sayText = `<@!${cmdParam[0]}> Дорогая моя, ты получаешь предупрежение. Причина: \n${userWarning.warning.description}`;
+				let userWarning = await warningAdd(msg, cmdParam);
+				let sayText = `<@!${cmdParam[0]}> Дорогая моя, ты получаешь предупреждение. Причина: \n${userWarning.warning.description}`;
 
 				if(userWarning.ban){
 					let userBan = await banAdd(msg, userWarning.ban.userID, userWarning.ban.description, null, userWarning.user);
@@ -98,22 +115,35 @@ bot.on("message", async msg=>{
 			if (await checkCommand(command, prefix, cmd.adminAddBan)){
 				let cmdParam = await commandGetParameters(msg.content, 3);
 				let userBan = await banAdd(msg, cmdParam[0], cmdParam[2], cmdParam[1]);
+				cmdParam[0] = cmdParam[0].slice(3, -1);
 
 				/* Выдаем позорную роль в качестве бана */
 				let member = msg.guild.members.cache.get(`${cmdParam[0]}`);
 				let role = msg.guild.roles.cache.find(role=>role.id == "695297927727284284");
+				console.log(cmdParam[0])
 				member.roles.add(role)
 
 				bot.channels.cache.get(mainChannel).send(`<@!${cmdParam[0]}> ${userBan}`);
+			}
+
+			/* убрать бан */
+			if (await checkCommand(command, prefix, cmd.adminDeleteBan)){
+				console.log('Delete ban')
+				let cmdParam = await commandGetParameters(msg.content, 1);
+				cmdParam[0] = cmdParam[0].slice(3, -1);
+
+				let member = msg.guild.members.cache.get(`${cmdParam[0]}`);
+				let user = await checkFileUserInfo(member.user);
+
+				await banDelete(user)
+				await roleValidation(msg.guild, user);
 			}
 
 			/* Тестовая  консоль */
 			if (command === prefix){
 				console.log("Тестовая команда");
 				let te = msg.guild.members.cache.find(member => member.user.id == '224095657223258112')
-					//member == 148422300243460096 {console.log(`${member.user.displayAvatarURL}`)})
-				let img = te.user.displayAvatarURL({format: 'jpg'});
-				await rankImage(msg, img);
+				te.roles.cache.map(role =>{ console.log(role.id +" - "+ role.name ) })
 			}
 		}
 
@@ -147,21 +177,22 @@ bot.login(config.token);
 /* Проверка на ранги всех пользователей */
 async function checkAllUsersRank(){
 	let allUsers = [];
-	/*bot.guilds.cache.find(key=>key == mainChannel).members.cache.map((member) => {
-		allUsers.push(member.user, member.user.displayAvatarURL({format: 'jpg'}))
-	});*/
+	let avatarList = [];
+	bot.guilds.cache.find(key=>key == mainChannel).members.cache.map((member) => {
+		allUsers.push(member.user)
+	});
+	bot.guilds.cache.find(key=>key == mainChannel).members.cache.map((member) => {
+		avatarList.push(member.user.displayAvatarURL({format: 'jpg'}))
+	});
+	console.log(allUsers)
 	let forList = bot.guilds.cache.find(key=>key == mainChannel).members.cache.map(member=>member[1]);
 	//for (let i=0; i < )
 
 	for (let i=0; i < allUsers.length; i++){
-		//console.log(`Проверяем пользователя: ${allUsers[i].user.id}`)
-		console.log(allUsers[i])
-		let user = await checkFileUserInfo(allUsers[i]);
+		let user = await checkFileUserInfo(allUsers[i], false);
 		await banAndWarningTimeoutCheck(user);                            // Проверяем срок бана и предупреждений
-		let calcRank = await calculateRank(user);                         // считаем ранг
-		await rankEdit(user, calcRank);                                   // записываем ранг в файл с инфой
-
-		let msgBot = msg.guilds.cache.find(key=>key == mainChannel);
+		await calculateRank(user);                                        // считаем ранг
+		let msgBot = bot.guilds.cache.find(key=>key == mainChannel);
 		await roleValidation(msgBot, user);                               // сюда вставим проверку на роли.
 	}
 }
@@ -177,7 +208,6 @@ async function callTimeEvent(){
 bot.on('ready', async (msg) => {
 	console.log(`${bot.user.username} online`);
 
-	//await checkAllUsersRank(); // неработает
 	setInterval(()=>{callTimeEvent()}, 1000*60*60); // Запускать функцию с интервалом в час
 
 	// bot.user.setPresence ({status: 'dmd', game:{name: 'Gay Porn', type: 3}});

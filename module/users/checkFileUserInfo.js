@@ -3,7 +3,7 @@ const info = require('./usersInfo/template/template');
 const messages = require('./usersInfo/template/template_messages');
 let folder = './module/users/usersInfo/';
 
-async function checkFileUserInfo(user){
+async function checkFileUserInfo(user, avatar=true){
 
 	const userInfoJSON = folder + user.id+'.json';
 	const userMessagesJSON = folder + user.id+'_messages.json';
@@ -17,7 +17,12 @@ async function checkFileUserInfo(user){
 		newInfo.mainID = user.id;
 		newInfo.mainNick = user.username;
 		newInfo.discriminator = user.discriminator;
-		newInfo.avatar = user.displayAvatarURL({format: 'jpg'});
+
+		if(avatar === null){
+			newInfo.avatar = user.displayAvatarURL({format: 'jpg'});
+		}else{
+			newInfo.avatar = 'https://cdn.discordapp.com/embed/avatars/4.png';
+		}
 
 		let objTemplate = JSON.stringify(newInfo, null, 2);
 		await fs.writeFileSync(userInfoJSON, objTemplate, (err) => { if(err) throw err; });

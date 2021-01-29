@@ -14,7 +14,7 @@ function even_or_odd(number, step) {
 	}
 }
 
-async function rankImage(info, msg) {
+async function rankImage(info, msg, role=null) {
 	let boardHeight = 80;
 	if (info.awards.length) {
 		boardHeight = 90 + 26 * Math.ceil(info.awards.length / 2);
@@ -55,8 +55,15 @@ async function rankImage(info, msg) {
 	//Ник
 	ctx.font = "16px Arial";
 	ctx.fillStyle = "#ffffff";
-	ctx.fillText(info.nick, 80, 30);
-	ctx.fillText(info.name, 80, 60);
+	ctx.fillText(info.nick, 80, 23);  //30
+	ctx.fillText(info.name, 80, 43);  //60
+
+	// Роль
+	if (role){
+		ctx.font = "13px Arial";
+		ctx.fillStyle = "#c7b52c";
+		ctx.fillText(role, 80, 67);  //30
+	}
 
 	//Предупреждения
 	//info.warnings = 5;

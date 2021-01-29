@@ -1,6 +1,7 @@
 {
   "editNick": ["name", "имя"],
   "profileCart": ["me", "я"],
+  "getProfileFriend": ["you", "ты"],
   "getWarning": ["warnings", "наказы"],
   "getBan": ["bans", "баны"],
   "getAwards": ["awards", "награды"],
@@ -14,5 +15,6 @@
   "adminAddAward": ["award", "награда"],
   "adminDeleteAward": ["daward", "унаграда"],
   "adminGuardProfile": ["guard", "защитить"],
-  "adminGetUserAndId": ["users", "люди"]
+  "adminGetUserAndId": ["users", "люди"],
+  "adminGetRoleAndId": ["roles", "роли"]
 }
